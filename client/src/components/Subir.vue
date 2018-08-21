@@ -1,5 +1,7 @@
 <template>
   <div style="padding-top: 10%;">
+    <h2 class="title">Usuario: </h2>
+    <h1 class="title">{{usuario.usuario}}</h1>
     <v-layout align-center justify-center>
       <v-flex xs12 sm8 md4>
         <v-card class="elevation-12">
@@ -45,6 +47,11 @@ export default {
     files: [],
     snackbar: false
   }),
+  computed: {
+    usuario () {
+      return this.$store.getters['obtenerUsuario']
+    }
+  },
   mounted () {
     FilePondO.registerPlugin(FilepondPluginFileValidateType)
     FilePondO.setOptions({

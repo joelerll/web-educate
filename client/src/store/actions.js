@@ -4,8 +4,8 @@ export default {
     return new Promise((resolve, reject) => {
       Vue.http.post(`/api/login`, { usuario, clave })
         .then((response) => {
-          if (response.body) {
-            commit('setUsuario', usuario)
+          if (response.body.estado) {
+            commit('setUsuario', response.body.datos)
             commit('setLoggeado')
             resolve(true)
           } else {

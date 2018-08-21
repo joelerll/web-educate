@@ -3,7 +3,8 @@ process.on('uncaughtException', function(err) {
   console.error(err.stack)
 })
 
-const URL_LOGIN = 'http://example.com/wsdl?wsdl'
+// 
+const URL_LOGIN = 'http://localhost:14122/ServicioAPCI.svc?wsdl'
 const URL_ARCHIVO = 'http://example.com/wsdl?wsdl'
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -26,7 +27,7 @@ app.post('/api/archivo', upload.single('archivo'), (req, res, next) => {
 	  console.log(req.file.buffer.toString())
 	  // codigo del webService
  //  	soap.createClient(URL_ARCHIVO, function(err, client) {
-	//   client.MyFunction(args, function(err, result) {
+	//   client.ExportarNotas(args, function(err, result) {
 	//       console.log(result)
 	//   })
 	// })
@@ -50,22 +51,21 @@ app.set('port', PORT)
 app.route('/api/login').post((req, res) => {
   let { usuario, clave } = req.body
   const args = { usuario, clave }
-  if (usuario === 'admin' && clave === 'admin') {
-  	req.session.loggeado = true
-  	req.session.usuario = usuario
-
-  	// codigo del webService
- //  	soap.createClient(URL_LOGIN, function(err, client) {
-	//   client.MyFunction(args, function(err, result) {
-	//       console.log(result)
-	//   })
-	// })
-	// codigo del webService
-
-  	res.send(true)
-  } else {
-  	res.send(false)
-  }
+  // codigo del webService
+  soap.createClient(URL_LOGIN, function(err, client) {
+    client.Login({ Usuario: usuario, Password: clave }, function(err, result) {
+      console.log(err)
+      let { Mensaje } = result['LoginResult']
+      if (Mensaje.trim().toLowerCase() === 'ok') {
+        req.session.loggeado = true
+        req.session.usuario = usuario
+        let { Codigo, Escuela, IdUsuario, NombreUsuario } = result['LoginResult']
+        resolve({ estado: true, datos: { codigo: Codigo, escuela: Escuela, id: IdUsuario, nombre: NombreUsuario }})
+      } else {
+        res.send({ estado: false, datos: 'El usuario no existe'})
+      }
+    })
+  })
 })
 
 app.route('/api/logout').get((req, res) => {

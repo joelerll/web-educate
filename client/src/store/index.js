@@ -12,7 +12,10 @@ Vue.use(VueResource)
 export const store = new Vuex.Store({
   state: {
     estaLoggeado: false,
-    usuario: ''
+    usuario: '',
+    codigo: '',
+	escuela: '',
+	id: ''
   },
   mutations,
   actions,
