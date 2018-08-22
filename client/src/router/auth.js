@@ -1,9 +1,12 @@
 import { store } from '../store'
 
 export default (to, from, next) => {
-  if (store.getters.estaLoggeado) {
-    next()
-  } else {
-    next('/')
-  }
+  console.log(store)
+  store._actions.EstaLogeado().then((resp) => {
+    if (resp) {
+      next()
+    } else {
+      next('/')
+    }
+  })
 }

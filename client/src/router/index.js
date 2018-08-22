@@ -15,8 +15,7 @@ export default new Router({
     {
       path: '/subir',
       name: 'Subir',
-      component: Subir,
-      beforeEnter: AuthGuard
+      component: Subir
     }
   ]
 })

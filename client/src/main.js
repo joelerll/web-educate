@@ -8,6 +8,8 @@ import { store } from '@/store'
 import Buefy from 'buefy'
 import 'buefy/lib/buefy.css'
 
+import './permission'
+
 Vue.use(Buefy)
 import 'vuetify/dist/vuetify.min.css'
 Vue.config.productionTip = false

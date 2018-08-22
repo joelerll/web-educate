@@ -4,8 +4,7 @@ process.on('uncaughtException', function(err) {
 })
 
 // 
-const URL_LOGIN = 'http://localhost:14122/ServicioAPCI.svc?wsdl'
-const URL_ARCHIVO = 'http://example.com/wsdl?wsdl'
+const URL = 'http://localhost:14122/ServicioAPCI.svc?wsdl'
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
@@ -24,15 +23,20 @@ app.post('/api/archivo', upload.single('archivo'), (req, res, next) => {
 	if (!req.file || req.file.mimetype != 'text/xml') {
 	  res.send({ estado: false, mensaje: 'El archivo no fue enviado'})
 	} else {
-	  console.log(req.file.buffer.toString())
+    // let { escuelaCodigo, anioCodigo } = req.
+    let args = { cod_escuela, cod_anio, Documentos: req.file.buffer.toString() }
 	  // codigo del webService
- //  	soap.createClient(URL_ARCHIVO, function(err, client) {
-	//   client.ExportarNotas(args, function(err, result) {
-	//       console.log(result)
-	//   })
-	// })
-	// codigo del webService
-	  res.send(true)
+  	soap.createClient(URL, function(err, client) {
+  	  client.ExportarNotas(args, function(err, result) {
+        let resp = result['LoginResult']
+        if (resp['MensajeRetorno'].trim().toLowerCase() === 'ok') {
+          res.send(true)
+        } else {
+          res.send(false)
+        }
+  	  })
+	  })
+	  // codigo del webService
 	}
 })
 
@@ -50,11 +54,12 @@ app.set('port', PORT)
 
 app.route('/api/login').post((req, res) => {
   let { usuario, clave } = req.body
-  const args = { usuario, clave }
-  // codigo del webService
-  soap.createClient(URL_LOGIN, function(err, client) {
+  // req.session.loggeado = true
+  // req.session.usuario = usuario
+  // res.send({ estado: true, datos: 'El usuario no existe'})
+
+  soap.createClient(URL, function(err, client) {
     client.Login({ Usuario: usuario, Password: clave }, function(err, result) {
-      console.log(err)
       let { Mensaje } = result['LoginResult']
       if (Mensaje.trim().toLowerCase() === 'ok') {
         req.session.loggeado = true
@@ -66,6 +71,14 @@ app.route('/api/login').post((req, res) => {
       }
     })
   })
+})
+
+app.route('/api/estaLogueado').get((req, res) => {
+  if (req.session && req.session.loggeado) {
+    res.send({ estado: true, datos: 'Esta logeado'})
+  } else {
+    res.send({ estado: false, datos: 'No Esta logeado'})
+  }
 })
 
 app.route('/api/logout').get((req, res) => {

@@ -5,7 +5,8 @@
   "author": "joelerll@gmail.com",
   "license": "MIT",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon app.js "
+    "dev": "cross-env NODE_ENV=development nodemon app.js ",
+    "dev:casa": "cross-env NODE_ENV=development:casa nodemon app.js "
   },
   "dependencies": {
     "body-parser": "^1.18.3",

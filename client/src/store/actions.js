@@ -22,5 +22,36 @@ export default {
       console.log(datos)
       resolve(true)
     })
+  },
+  EstaLogeado ({commit, dispatch}) {
+    return new Promise((resolve, reject) => {
+      Vue.http.get(`/api/estaLogueado`)
+        .then((response) => {
+          if (response.body.estado) {
+            commit('setLoggeado')
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
+  },
+  Logout ({commit, dispatch}) {
+    return new Promise((resolve, reject) => {
+      Vue.http.get(`/api/logout`)
+        .then((response) => {
+          if (response.body.estado) {
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
   }
 }
