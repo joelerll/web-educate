@@ -28,7 +28,7 @@ export default {
         .then((response) => {
           if (response.body.estado) {
             commit('setLoggeado')
-            resolve(true)
+            resolve(response.body.datos)
           } else {
             resolve(false)
           }

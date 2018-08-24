@@ -7,6 +7,7 @@ router.beforeEach((to, from, next) => {
   } else {
     store.dispatch('EstaLogeado').then((resp) => {
       if (resp) {
+        store.commit('setUsuario', resp)
         next()
       } else {
         next('/')

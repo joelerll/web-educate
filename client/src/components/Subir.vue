@@ -15,7 +15,7 @@
           <v-select
             :items="codigos"
             box
-            label="Escoger código escuela"
+            label="Escoger código"
             v-model="codigo"
           ></v-select>
           </v-flex>
@@ -23,7 +23,7 @@
       <v-layout align-center justify-center>
 
         <v-flex xs12 sm8 md4>
-          <v-card class="elevation-12" v-show="codigo != ''">
+          <v-card class="elevation-12" v-show="codigo != '' && desaparecer == false">
             <v-toolbar dark color="primary">
               <v-toolbar-title >Subir Archivo</v-toolbar-title>
               <v-spacer></v-spacer>
@@ -75,6 +75,7 @@ export default {
     snackbarError: false,
     codigo: '',
     mensajeError: '',
+    desaparecer: false,
     timeout: 10000
   }),
   computed: {
@@ -87,12 +88,13 @@ export default {
     }
   },
   mounted () {
-
+    FilePondO.registerPlugin(FilepondPluginFileValidateType)
   },
   watch: {
-    codigo () {
+    codigo (ant, desp) {
+      this.desaparecer = true
       let usuario = this.$store.getters['obtenerUsuario']['codigoEscuela']
-      FilePondO.registerPlugin(FilepondPluginFileValidateType)
+      this.desaparecer = false
       FilePondO.setOptions({
         server: {
           url: './api/archivo',

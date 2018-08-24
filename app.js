@@ -23,24 +23,28 @@ app.post('/api/archivo', upload.single('archivo'), (req, res, next) => {
 	if (!req.file || req.file.mimetype != 'text/xml') {
 	  res.send({ estado: false, mensaje: 'El archivo no fue enviado'})
 	} else {
-	  // codigo del webService
-    let { cod_escuela, cod_anio } = req.headers
-    let args = { cod_escuela, cod_anio, Documentos: req.file.buffer.toString() }
-  	soap.createClient(URL, function(err, client) {
-  	  client.ExportarNotas(args, function(err, result) {
-        console.log(err)
-        console.log(result)
-        let resp = result['ExportarNotasResult']
-        if (resp['CodigoRetorno'].trim() !== '999') {
-          res.send(true)
-        } else {
-          console.log(result['MensajeRetorno'])
-          res.status(400)
-          res.json({ estado: false, mensaje: resp['MensajeRetorno']})
-        }
-  	  })
-	  })
-	  // codigo del webService
+    try {
+      // codigo del webService
+      let { cod_escuela, cod_anio } = req.headers
+      let args = { cod_escuela, cod_anio, Documentos: req.file.buffer.toString() }
+      soap.createClient(URL, function(err, client) {
+        client.ExportarNotas(args, function(err, result) {
+          console.log(err)
+          console.log(result)
+          let resp = result['ExportarNotasResult']
+          if (resp['CodigoRetorno'].trim() !== '999') {
+            res.send(true)
+          } else {
+            res.status(400)
+            res.json({ estado: false, mensaje: resp['MensajeRetorno']})
+          }
+        })
+      })
+      // codigo del webService
+    } catch (e) {
+      console.log('error')
+      res.json({ estado: false, mensaje: 'Server error'})
+    }
 	}
 })
 
@@ -57,16 +61,16 @@ app.use('/', express.static(path.join(__dirname, 'client/dist')))
 app.set('port', PORT)
 
 app.route('/api/login').post((req, res) => {
-  let { usuario, clave } = req.body
+  // let { usuario, clave } = req.body
   // let result = {}
   // req.session.loggeado = true
-  // req.session.usuario = usuario
   // result['LoginResult'] = {
   //   Codigo: 'cod_escuelaTmp',
   //   NombreUsuario: 'Prueba',
   //   Codigos: 'COS2009,COS2010,COS2011',
   //   Cod_escuela: 'cod_escuelaTmp'
   // }
+  // req.session.usuario = result['LoginResult']
   // let { Codigo, Escuela, IdUsuario, NombreUsuario, Codigos, Cod_escuela } = result['LoginResult']
   // res.send({ estado: true, datos: { codigo: Codigo, escuela: Escuela, id: IdUsuario, nombre: NombreUsuario, codigos: Codigos, codigoEscuela: Cod_escuela }})
 
@@ -75,7 +79,7 @@ app.route('/api/login').post((req, res) => {
       let { Logged } = result['LoginResult']
       if (Logged.trim().toLowerCase() === 'true') {
         req.session.loggeado = true
-        req.session.usuario = usuario
+        req.session.usuario = result['LoginResult']
         
         let { Codigo, Escuela, IdUsuario, NombreUsuario, Codigos, Cod_escuela } = result['LoginResult']
         res.send({ estado: true, datos: { codigo: Codigo, escuela: Escuela, id: IdUsuario, nombre: NombreUsuario, codigos: Codigos, codigoEscuela: Cod_escuela }})
@@ -89,7 +93,8 @@ app.route('/api/login').post((req, res) => {
 
 app.route('/api/estaLogueado').get((req, res) => {
   if (req.session && req.session.loggeado) {
-    res.send({ estado: true, datos: 'Esta logeado'})
+    let { Codigo, Escuela, IdUsuario, NombreUsuario, Codigos, Cod_escuela } = req.session.usuario
+    res.send({ estado: true, datos: { codigo: Codigo, escuela: Escuela, id: IdUsuario, nombre: NombreUsuario, codigos: Codigos, codigoEscuela: Cod_escuela }})
   } else {
     res.send({ estado: false, datos: 'No Esta logeado'})
   }
