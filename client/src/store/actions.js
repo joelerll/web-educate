@@ -19,7 +19,6 @@ export default {
   },
   Enviar ({commit, dispatch}, datos) {
     return new Promise((resolve, reject) => {
-      console.log(datos)
       resolve(true)
     })
   },

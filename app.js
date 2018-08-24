@@ -23,9 +23,8 @@ app.post('/api/archivo', upload.single('archivo'), (req, res, next) => {
 	if (!req.file || req.file.mimetype != 'text/xml') {
 	  res.send({ estado: false, mensaje: 'El archivo no fue enviado'})
 	} else {
-    // let { escuelaCodigo, anioCodigo } = req.
-    let args = { cod_escuela, cod_anio, Documentos: req.file.buffer.toString() }
 	  // codigo del webService
+    let args = { cod_escuela, cod_anio, Documentos: req.file.buffer.toString() }
   	soap.createClient(URL, function(err, client) {
   	  client.ExportarNotas(args, function(err, result) {
         let resp = result['LoginResult']
@@ -54,23 +53,33 @@ app.set('port', PORT)
 
 app.route('/api/login').post((req, res) => {
   let { usuario, clave } = req.body
+  // let result = {}
   // req.session.loggeado = true
   // req.session.usuario = usuario
-  // res.send({ estado: true, datos: 'El usuario no existe'})
+  // result['LoginResult'] = {
+  //   Codigo: 'cod_escuelaTmp',
+  //   NombreUsuario: 'Prueba',
+  //   Codigos: 'COS2009,COS2010,COS2011',
+  //   Cod_escuela: 'cod_escuelaTmp'
+  // }
+  // let { Codigo, Escuela, IdUsuario, NombreUsuario, Codigos, Cod_escuela } = result['LoginResult']
+  // res.send({ estado: true, datos: { codigo: Codigo, escuela: Escuela, id: IdUsuario, nombre: NombreUsuario, codigos: Codigos, codigoEscuela: Cod_escuela }})
 
   soap.createClient(URL, function(err, client) {
     client.Login({ Usuario: usuario, Password: clave }, function(err, result) {
-      let { Mensaje } = result['LoginResult']
-      if (Mensaje.trim().toLowerCase() === 'ok') {
+      let { Logged } = result['LoginResult']
+      if (Logged.trim().toLowerCase() === 'true') {
         req.session.loggeado = true
         req.session.usuario = usuario
-        let { Codigo, Escuela, IdUsuario, NombreUsuario } = result['LoginResult']
-        resolve({ estado: true, datos: { codigo: Codigo, escuela: Escuela, id: IdUsuario, nombre: NombreUsuario }})
+        
+        let { Codigo, Escuela, IdUsuario, NombreUsuario, Codigos, Cod_escuela } = result['LoginResult']
+        resolve({ estado: true, datos: { codigo: Codigo, escuela: Escuela, id: IdUsuario, nombre: NombreUsuario, codigos: Codigos, codigoEscuela: Cod_escuela }})
       } else {
         res.send({ estado: false, datos: 'El usuario no existe'})
       }
     })
   })
+
 })
 
 app.route('/api/estaLogueado').get((req, res) => {

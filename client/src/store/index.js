@@ -14,8 +14,10 @@ export const store = new Vuex.Store({
     estaLoggeado: false,
     usuario: '',
     codigo: '',
-	escuela: '',
-	id: ''
+	  escuela: '',
+	  id: '',
+    codigos: [],
+    codigoEscuela: ''
   },
   mutations,
   actions,

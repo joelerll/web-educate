@@ -7,7 +7,9 @@ export default {
   	  usuario: state.usuario,
       codigo: state.codigo,
 	    escuela: state.escuela,
-	    id: state.id
+	    id: state.id,
+      codigos: state.codigos,
+      codigoEscuela: state.codigoEscuela
   	}
   }
 }

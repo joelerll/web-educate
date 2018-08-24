@@ -12,24 +12,28 @@
       <h1 class="title">{{usuario.usuario}}</h1>
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
-          <v-card class="elevation-12">
+          <v-select
+            :items="codigos"
+            box
+            label="Escoger código escuela"
+            v-model="codigo"
+          ></v-select>
+          </v-flex>
+        </v-layout>
+      <v-layout align-center justify-center>
+
+        <v-flex xs12 sm8 md4>
+          <v-card class="elevation-12" v-show="codigo != ''">
             <v-toolbar dark color="primary">
               <v-toolbar-title >Subir Archivo</v-toolbar-title>
               <v-spacer></v-spacer>
             </v-toolbar>
-            <v-card-text>
+            <v-card-text >
               <input type="file" class="filepond archivo" name="archivo">
             </v-card-text>
           </v-card>
         </v-flex>
       </v-layout>
-      <!-- <h1></h1>
-      <label class="text-reader">
-         Subir Archivo
-        <input type="file" @change="loadTextFromFile">
-        <input type="file" class="filepond archivo" name="archivo">
-      </label> -->
-
       <v-snackbar
           v-model="snackbar"
         >
@@ -54,54 +58,65 @@ import FilepondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 export default {
   data: () => ({
     files: [],
-    snackbar: false
+    snackbar: false,
+    codigo: ''
   }),
   computed: {
     usuario () {
       return this.$store.getters['obtenerUsuario']
+    },
+    codigos () {
+      let codigos = this.$store.getters['obtenerUsuario']['codigos'].split(',')
+      return codigos
     }
   },
   mounted () {
-    FilePondO.registerPlugin(FilepondPluginFileValidateType)
-    FilePondO.setOptions({
-      server: {
-        url: './api/archivo',
-        timeout: 40000
+
+  },
+  watch: {
+    codigo () {
+      let usuario = this.$store.getters['obtenerUsuario']['codigoEscuela']
+      FilePondO.registerPlugin(FilepondPluginFileValidateType)
+      FilePondO.setOptions({
+        server: {
+          url: './api/archivo',
+          timeout: 40000,
+          process: {
+            headers: {
+                'cod_escuela': usuario,
+                'cod_anio': this.codigo
+            }
+          }
+        }
+      })
+      for (let pond of document.querySelectorAll('.archivo')) {
+        FilePondO.create(pond, {
+          labelIdle: `Subir archivo... <span class="filepond--label-action">Buscar</span>`,
+          labelFileLoading: 'Subiendo',
+          labelFileProcessing: 'Subiendo',
+          labelFileTypeNotAllowed: 'El tipo de archivo no es válido',
+          fileValidateTypeLabelExpectedTypes: 'Se espera xml',
+          labelFileProcessingComplete: 'Completada',
+          labelTapToCancel: 'Toque para cancelar',
+          labelTapToUndo: 'Toque para eliminar',
+          acceptedFileTypes: ['text/xml']
+        })
       }
-    })
-    for (let pond of document.querySelectorAll('.archivo')) {
-      FilePondO.create(pond, {
-        labelIdle: `Subir archivo... <span class="filepond--label-action">Buscar</span>`,
-        labelFileLoading: 'Subiendo',
-        labelFileProcessing: 'Subiendo',
-        labelFileTypeNotAllowed: 'El tipo de archivo no es válido',
-        fileValidateTypeLabelExpectedTypes: 'Se espera xml',
-        labelFileProcessingComplete: 'Completada',
-        labelTapToCancel: 'Toque para cancelar',
-        labelTapToUndo: 'Toque para eliminar',
-        acceptedFileTypes: ['text/xml']
-      })
-    }
-    for (let pond of document.querySelectorAll('.archivo')) {
-      pond.addEventListener('FilePond:addfile', (e) => {
-      })
-      pond.addEventListener('FilePond:addfilestart', (e) => {
-        console.log('aa')
-      })
-      pond.addEventListener('FilePond:processfile', (e) => {
-        this.snackbar = true
-      })
+      for (let pond of document.querySelectorAll('.archivo')) {
+        pond.addEventListener('FilePond:addfile', (e) => {
+        })
+        pond.addEventListener('FilePond:addfilestart', (e) => {
+        })
+        pond.addEventListener('FilePond:processfile', (e) => {
+          this.snackbar = true
+        })
+      }
     }
   },
   methods: {
     loadTextFromFile(ev) {
-      console.log('aa')
-      let self = this
-      const file = ev.target.files[0];
-      const reader = new FileReader();
-      reader.readAsText(file)
       reader.onload = e => {
-        this.$store.dispatch('Enviar', e.target.result).then(() => {
+        this.$store.dispatch('Enviar', x).then(() => {
           this.snackbar = true
         })
       }
