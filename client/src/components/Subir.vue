@@ -28,7 +28,7 @@
               <v-toolbar-title >Subir Archivo</v-toolbar-title>
               <v-spacer></v-spacer>
             </v-toolbar>
-            <v-card-text >
+            <v-card-text id="carta">
               <input type="file" class="filepond archivo" name="archivo">
             </v-card-text>
           </v-card>
@@ -92,9 +92,17 @@ export default {
   },
   watch: {
     codigo (ant, desp) {
+      let input = document.createElement('input')
+      input.setAttribute("type", "file")
+      input.setAttribute("class", "filepond archivo")
+      input.setAttribute("name", "archivo")
+      let carta = document.getElementById('carta')
+      document.getElementsByClassName('archivo')[0].remove()
+      carta.appendChild(input)
       this.desaparecer = true
       let usuario = this.$store.getters['obtenerUsuario']['codigoEscuela']
       this.desaparecer = false
+      FilePondO.setOptions()
       FilePondO.setOptions({
         server: {
           url: './api/archivo',
