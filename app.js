@@ -24,14 +24,19 @@ app.post('/api/archivo', upload.single('archivo'), (req, res, next) => {
 	  res.send({ estado: false, mensaje: 'El archivo no fue enviado'})
 	} else {
 	  // codigo del webService
+    let { cod_escuela, cod_anio } = req.headers
     let args = { cod_escuela, cod_anio, Documentos: req.file.buffer.toString() }
   	soap.createClient(URL, function(err, client) {
   	  client.ExportarNotas(args, function(err, result) {
-        let resp = result['LoginResult']
-        if (resp['MensajeRetorno'].trim().toLowerCase() === 'ok') {
+        console.log(err)
+        console.log(result)
+        let resp = result['ExportarNotasResult']
+        if (resp['CodigoRetorno'].trim() !== '999') {
           res.send(true)
         } else {
-          res.send(false)
+          console.log(result['MensajeRetorno'])
+          res.status(400)
+          res.json({ estado: false, mensaje: resp['MensajeRetorno']})
         }
   	  })
 	  })
@@ -73,7 +78,7 @@ app.route('/api/login').post((req, res) => {
         req.session.usuario = usuario
         
         let { Codigo, Escuela, IdUsuario, NombreUsuario, Codigos, Cod_escuela } = result['LoginResult']
-        resolve({ estado: true, datos: { codigo: Codigo, escuela: Escuela, id: IdUsuario, nombre: NombreUsuario, codigos: Codigos, codigoEscuela: Cod_escuela }})
+        res.send({ estado: true, datos: { codigo: Codigo, escuela: Escuela, id: IdUsuario, nombre: NombreUsuario, codigos: Codigos, codigoEscuela: Cod_escuela }})
       } else {
         res.send({ estado: false, datos: 'El usuario no existe'})
       }

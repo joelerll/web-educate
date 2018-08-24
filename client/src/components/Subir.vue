@@ -46,6 +46,19 @@
           Close
         </v-btn>
       </v-snackbar>
+      <v-snackbar
+          v-model="snackbarError"
+          :timeout="timeout"
+        >
+          {{mensajeError}}
+        <v-btn
+          color="red"
+          flat
+          @click="snackbarError = false"
+        >
+          Close
+        </v-btn>
+      </v-snackbar>
     </div>
   </div>
 
@@ -59,7 +72,10 @@ export default {
   data: () => ({
     files: [],
     snackbar: false,
-    codigo: ''
+    snackbarError: false,
+    codigo: '',
+    mensajeError: '',
+    timeout: 10000
   }),
   computed: {
     usuario () {
@@ -85,6 +101,14 @@ export default {
             headers: {
                 'cod_escuela': usuario,
                 'cod_anio': this.codigo
+            },
+            onerror: (res) => {
+              let resp = JSON.parse(res)
+              if (!resp.estado) {
+                this.snackbarError = true
+                this.mensajeError = resp.mensaje
+              }
+              return JSON.parse(res)
             }
           }
         }
@@ -108,7 +132,9 @@ export default {
         pond.addEventListener('FilePond:addfilestart', (e) => {
         })
         pond.addEventListener('FilePond:processfile', (e) => {
-          this.snackbar = true
+          if (!e.detail.error) {
+            this.snackbar = true
+          }
         })
       }
     }
