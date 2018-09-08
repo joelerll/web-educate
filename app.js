@@ -23,11 +23,6 @@ const soap = require('soap')
 // SelectAniosLectivos()
 // SelectPerfiles ()
 
-// SelectAniosLectivos 'COS2009,COS2010,COS2011,COS2018'
-// cod_escuela FEDUCATE,GyeIn
-// SelectPerfiles Superusuario, Administrador de escuela, USUARIO ESCUELA, PROFESOR, DIRECTOR, TUTOR, VISTAS
-// ids 1 al 8
-
 function obtenerEscuelas () {
   return new Promise((resolve, reject) => {
     if (process.env.NODE_ENV === 'development') {
@@ -36,9 +31,23 @@ function obtenerEscuelas () {
       let args = {}
       soap.createClient(URL, function(err, client) {
         client.SelectEscuelas(args, function(err, result) {
-          // resolve(result)
-          console.log('escuelas: ', JSON.stringify(result))
-          resolve([{ id: 1, tipo: 'FEDUCATE' },{ id: 2, tipo: 'GyeIn' }])
+          let resp = result['SelectEscuelasResult']
+          if (resp && resp['CodigoRetorno'].trim() !== '999') {
+            // TODO: logica en result
+            /*
+escuelas:  {"SelectEscuelasResult":{"CodigoRetorno":"000","Escuelas":{"Escuela":
+[{"Nombre":"FUNDACION EDUCATE","cod_escuela":"FEDUCATE","id":"253"},{"Nombre":"G
+uayaquilIN","cod_escuela":"GyeIn","id":"254"}]},"MensajeRetorno":"OK"}}
+            */
+            let escuelas = resp['Escuelas']['Escuela']
+            let escuelasCodigos = [] 
+            for (let codigo in escuelas) {
+              escuelasCodigos.push({ id: codigo['id'], tipo: codigo['cod_escuela'] })
+            }
+            resolve(escuelasCodigos)
+          } else {
+            resolve([{ id: 1, tipo: 'FEDUCATE' },{ id: 2, tipo: 'GyeIn' }])
+          }          
         })
       })
     }
@@ -53,9 +62,26 @@ function obtenerAnios () {
       let args = {}
       soap.createClient(URL, function(err, client) {
         client.SelectAniosLectivos(args, function(err, result) {
-          // resolve(result)
-          console.log('anios: ' + JSON.stringify(result))
-          resolve('COS2009,COS2010,COS2011,COS2018')
+          let resp = result['SelectAniosLectivosResult']
+          if (resp && resp['CodigoRetorno'].trim() !== '999') {
+            // TODO: logica en result
+            /*
+anios: {"SelectAniosLectivosResult":{"AniosLectivos":{"AnioLectivo":[{"cod_anio"
+:"COS2009","id":"16","nombre":"COSTA 2009"},{"cod_anio":"COS2010","id":"17","nom
+bre":"COSTA 2010"},{"cod_anio":"COS2011","id":"18","nombre":"COSTA 2011"},{"cod_
+anio":"COS2018","id":"19","nombre":"COSTA 2018"}]},"CodigoRetorno":"000","Mensaj
+eRetorno":"OK"}}
+
+            */
+            let anios = resp['AniosLectivos']['AnioLectivo']
+            let codigos = [] 
+            for (let codigo in anios) {
+              codigos.push({ id: codigo['id'], tipo: codigo['cod_anio'] })
+            }
+            resolve(codigos.join(","))
+          } else {
+            resolve('COS2009,COS2010,COS2011,COS2018')
+          }
         })
       })
     }
@@ -70,9 +96,27 @@ function obtenerPerfiles () {
       let args = {}
       soap.createClient(URL, function(err, client) {
         client.SelectPerfiles(args, function(err, result) {
-          /// resolve(result)
+          let resp = result['SelectPerfilesResult']
           console.log('perfiles:'  + JSON.stringify(result))
-          resolve([{ id: 2, tipo: 'Administrador de escuela'},{ id: 3, tipo: 'USUARIO ESCUELA'},{ id: 4, tipo: 'PROFESOR'},{ id: 5, tipo: 'DIRECTOR'},{ id: 6, tipo: 'TUTOR'},{ id: 7, tipo: 'VISTAS'}])
+          if (resp && resp['CodigoRetorno'].trim() !== '999') {
+            // TODO: logica en result
+            /*
+perfiles:{"SelectPerfilesResult":{"CodigoRetorno":"000","MensajeRetorno":"OK","P
+erfiles":{"Perfil":[{"id":"1","nombre":"Superusuario","relacionado_escuela":"fal
+se","superusuario":"true"},{"id":"3","nombre":"Administrador de escuela","relaci
+onado_escuela":"false","superusuario":"false"},{"id":"4","nombre":"USUARIO ESCUE
+LA","relacionado_escuela":"false","superusuario":"false"},{"id":"5","nombre":"PR
+OFESOR","relacionado_escuela":"false","superusuario":"false"},{"id":"6","nombre"
+:"DIRECTOR","relacionado_escuela":"false","superusuario":"false"},{"id":"7","nom
+bre":"TUTOR","relacionado_escuela":"false","superusuario":"false"},{"id":"8","no
+mbre":"VISTAS","relacionado_escuela":"false","superusuario":"false"}]}}}
+
+}
+            */
+            resolve([{ id: 2, tipo: 'Administrador de escuela'},{ id: 3, tipo: 'USUARIO ESCUELA'},{ id: 4, tipo: 'PROFESOR'},{ id: 5, tipo: 'DIRECTOR'},{ id: 6, tipo: 'TUTOR'},{ id: 7, tipo: 'VISTAS'}])
+          } else {
+            resolve([{ id: 2, tipo: 'Administrador de escuela'},{ id: 3, tipo: 'USUARIO ESCUELA'},{ id: 4, tipo: 'PROFESOR'},{ id: 5, tipo: 'DIRECTOR'},{ id: 6, tipo: 'TUTOR'},{ id: 7, tipo: 'VISTAS'}])
+          }
         })
       })
     }
@@ -87,8 +131,6 @@ function login ({ usuario, clave }, req) {
         if (Logged.trim().toLowerCase() === 'true') {
           req.session.loggeado = true
           req.session.usuario = result['LoginResult']
-          // let { Codigo, Escuela, IdUsuario, NombreUsuario, Codigos, Cod_escuela } = result['LoginResult']
-          // resolve({ estado: true, datos: { codigo: Codigo, escuela: Escuela, id: IdUsuario, nombre: NombreUsuario, codigos: Codigos, codigoEscuela: Cod_escuela }})
           let { Codigo, Escuela, IdUsuario, NombreUsuario, Cod_escuela, IdPerfil, Perfil } = result['LoginResult']
           resolve({ estado: true, datos: { codigo: Codigo, escuela: Escuela, id: IdUsuario, nombre: NombreUsuario, codigoEscuela: Cod_escuela, perfilId: IdPerfil, perfil: Perfil }})
         } else {
@@ -135,6 +177,7 @@ app.post('/api/archivo', upload.single('archivo'), (req, res, next) => {
       // codigo del webService
       let { cod_escuela, cod_anio } = req.headers
       let args = { cod_escuela, cod_anio, Documentos: req.file.buffer.toString() }
+      console.log("enviar archivo: " + JSON.stringify({ cod_escuela, cod_anio }))
       soap.createClient(URL, function(err, client) {
         client.ImportarNotas(args, function(err, result) {
           console.log(err)
