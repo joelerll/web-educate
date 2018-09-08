@@ -37,6 +37,7 @@ function obtenerEscuelas () {
       soap.createClient(URL, function(err, client) {
         client.SelectEscuelas(args, function(err, result) {
           // resolve(result)
+          console.log('escuelas: ', JSON.stringify(result))
           resolve([{ id: 1, tipo: 'FEDUCATE' },{ id: 2, tipo: 'GyeIn' }])
         })
       })
@@ -53,6 +54,7 @@ function obtenerAnios () {
       soap.createClient(URL, function(err, client) {
         client.SelectAniosLectivos(args, function(err, result) {
           // resolve(result)
+          console.log('anios: ' + JSON.stringify(result))
           resolve('COS2009,COS2010,COS2011,COS2018')
         })
       })
@@ -69,6 +71,7 @@ function obtenerPerfiles () {
       soap.createClient(URL, function(err, client) {
         client.SelectPerfiles(args, function(err, result) {
           /// resolve(result)
+          console.log('perfiles:'  + JSON.stringify(result))
           resolve([{ id: 2, tipo: 'Administrador de escuela'},{ id: 3, tipo: 'USUARIO ESCUELA'},{ id: 4, tipo: 'PROFESOR'},{ id: 5, tipo: 'DIRECTOR'},{ id: 6, tipo: 'TUTOR'},{ id: 7, tipo: 'VISTAS'}])
         })
       })
@@ -112,7 +115,7 @@ function loginDev ({ usuario, clave }, req) {
       Codigo: 'cod_escuelaTmp',
       NombreUsuario: nombre,
       Codigos: 'COS2009,COS2010,COS2011',
-      Cod_escuela: 'cod_escuelaTmp',
+      Cod_escuela: '4',
       Escuela: 'ESPOL',
       IdUsuario: '1',
       IdPerfil: perfilId,
@@ -132,12 +135,12 @@ app.post('/api/archivo', upload.single('archivo'), (req, res, next) => {
       // codigo del webService
       let { cod_escuela, cod_anio } = req.headers
       let args = { cod_escuela, cod_anio, Documentos: req.file.buffer.toString() }
-      console.log(args)
       soap.createClient(URL, function(err, client) {
         client.ImportarNotas(args, function(err, result) {
-          let resp = result
-          // let resp = result['ExportarNotasResult']
-          if (resp['CodigoRetorno'].trim() !== '999') {
+          console.log(err)
+          console.log(result)
+          let resp = result['ImportarNotasResult']
+          if (resp['CodigoRetorno'] && resp['CodigoRetorno'].trim() !== '999') {
             res.send(true)
           } else {
             // resp['MensajeRetorno']
