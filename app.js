@@ -36,7 +36,8 @@ function obtenerEscuelas () {
       let args = {}
       soap.createClient(URL, function(err, client) {
         client.SelectEscuelas(args, function(err, result) {
-          resolve(result)
+          // resolve(result)
+          resolve([{ id: 1, tipo: 'FEDUCATE' },{ id: 2, tipo: 'GyeIn' }])
         })
       })
     }
@@ -51,7 +52,8 @@ function obtenerAnios () {
       let args = {}
       soap.createClient(URL, function(err, client) {
         client.SelectAniosLectivos(args, function(err, result) {
-          resolve(result)
+          // resolve(result)
+          resolve('COS2009,COS2010,COS2011,COS2018')
         })
       })
     }
@@ -61,13 +63,13 @@ function obtenerAnios () {
 function obtenerPerfiles () {
   return new Promise((resolve, reject) => {
     if (process.env.NODE_ENV === 'development') {
-       // Superusuario, Administrador de escuela, USUARIO ESCUELA, PROFESOR, DIRECTOR, TUTOR, VISTAS
        resolve([{ id: 2, tipo: 'Administrador de escuela'},{ id: 3, tipo: 'USUARIO ESCUELA'},{ id: 4, tipo: 'PROFESOR'},{ id: 5, tipo: 'DIRECTOR'},{ id: 6, tipo: 'TUTOR'},{ id: 7, tipo: 'VISTAS'}])
     } else {
       let args = {}
       soap.createClient(URL, function(err, client) {
         client.SelectPerfiles(args, function(err, result) {
-          resolve(result)
+          /// resolve(result)
+          resolve([{ id: 2, tipo: 'Administrador de escuela'},{ id: 3, tipo: 'USUARIO ESCUELA'},{ id: 4, tipo: 'PROFESOR'},{ id: 5, tipo: 'DIRECTOR'},{ id: 6, tipo: 'TUTOR'},{ id: 7, tipo: 'VISTAS'}])
         })
       })
     }
@@ -130,9 +132,11 @@ app.post('/api/archivo', upload.single('archivo'), (req, res, next) => {
       // codigo del webService
       let { cod_escuela, cod_anio } = req.headers
       let args = { cod_escuela, cod_anio, Documentos: req.file.buffer.toString() }
+      console.log(args)
       soap.createClient(URL, function(err, client) {
-        client.ExportarNotas(args, function(err, result) {
-          let resp = result['ExportarNotasResult']
+        client.ImportarNotas(args, function(err, result) {
+          let resp = result
+          // let resp = result['ExportarNotasResult']
           if (resp['CodigoRetorno'].trim() !== '999') {
             res.send(true)
           } else {
