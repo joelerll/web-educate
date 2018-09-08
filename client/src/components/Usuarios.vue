@@ -25,7 +25,7 @@
             <v-select
               :items="escuelas"
               item-text="tipo"
-              item-value="id"
+              item-value="tipo"
               box
               label="Escoger la escuela"
               v-model="codigoEscuela"

@@ -188,7 +188,7 @@ app.route('/api/login').post((req, res) => {
       }
     })
   } else {
-    Promise.all([login({ usuario, clave }, req), obtenerAnios(), obtenerPerfiles()])
+    Promise.all([login({ usuario, clave }, req), obtenerAnios(), obtenerPerfiles(), obtenerEscuelas()])
     .then(values => {
       let [loginResp, anios, perfiles, escuelas ] = values
       req.session.perfiles = perfiles
@@ -209,16 +209,18 @@ app.route('/api/login').post((req, res) => {
 app.route('/api/usuarios').post((req, res) => {
   let { codigoEscuela, nombre, usuario, perfil } = req.body
   let args = { cod_escuela: codigoEscuela, Usuario: usuario, Nombres: nombre, IdPerfil: perfil }
+  console.log("Args usuario" + JSON.stringify(args))
   if (process.env.NODE_ENV === 'development') {
     res.json({ estado: true, datos: 'Creado Correctamente'})
   } else {
     try {
       soap.createClient(URL, function(err, client) {
         client.CrearUsuario(args, function(err, result) {
-          let resp = result['ExportarNotasResult']
-          if (resp['CodigoRetorno'].trim() !== '999') {
+          let resp = result['CrearUsuarioResult']
+          if (resp && resp['Codigo'].trim() !== '999') {
             res.send(true)
           } else {
+            console.log(result)
             res.status(400)
             res.json({ estado: false, mensaje: resp['MensajeRetorno']})
           }
