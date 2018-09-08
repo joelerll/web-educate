@@ -73,8 +73,13 @@ export default {
       let usuario = this.usuario
       let clave = this.clave
       this.$store.dispatch('Login', { usuario, clave }).then((resp) => {
+        let esAdmin = this.$store.getters['esAdmin']
         if (resp) {
-          router.push('subir')
+          if (esAdmin) {
+            router.push('usuarios')
+          } else {
+            router.push('subir')
+          }
         } else {
           this.snackbar = true
         }

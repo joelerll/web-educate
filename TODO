@@ -1,3 +1,15 @@
-Enviar datos al archivo
-Botones para escoger anio a region 
-* Buscar todos los codigos de los cursos y enviarlo cuando me loggeo (.NET)
+[ ] probar enviar archivo
+[ ] probar login con profesores
+[ ] probar login con admin (solo el puede crear usuarios y ademas de subir archivos)
+
+[ ] probar con los selectores de obtener SelectEscuelas SelectPerfiles
+
+[ ] pedir probar cada nuevo metodo
+
+
+
+[ ] no puedo ingresar al servidor de prueba por teams
+[ ] cuando podre crear usuarios?, cuando ingreso como admin supongo.
+[ ] que tipos de usurios existen, en la web service CrearUsuarios no se que los tipos
+[ ] Pedir usuarios de prueba 
+[ ] los ids de usuarios son string?

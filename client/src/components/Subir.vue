@@ -1,6 +1,6 @@
 <template>
   <div>
-     <v-toolbar>
+    <v-toolbar>
       <v-toolbar-title>Fundación Edúcate</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
@@ -93,9 +93,9 @@ export default {
   watch: {
     codigo (ant, desp) {
       let input = document.createElement('input')
-      input.setAttribute("type", "file")
-      input.setAttribute("class", "filepond archivo")
-      input.setAttribute("name", "archivo")
+      input.setAttribute('type', 'file')
+      input.setAttribute('class', 'filepond archivo')
+      input.setAttribute('name', 'archivo')
       let carta = document.getElementById('carta')
       document.getElementsByClassName('archivo')[0].remove()
       carta.appendChild(input)

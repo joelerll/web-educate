@@ -11,5 +11,14 @@ export default {
       codigos: state.codigos,
       codigoEscuela: state.codigoEscuela
   	}
+  },
+  esAdmin (state) {
+    return state.perfilId == 1
+  },
+  ObtenerEscuelas (state) {
+    return state.escuelas
+  },
+  ObtenerPerfiles (state) {
+    return state.perfiles
   }
 }

@@ -52,5 +52,20 @@ export default {
           reject(err)
         })
     })
+  },
+  UsuarioCrear ({commit, dispatch}, datos) {
+    return new Promise((resolve, reject) => {
+      Vue.http.post(`/api/usuarios`, datos)
+        .then((response) => {
+          if (response.body.estado) {
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
   }
 }

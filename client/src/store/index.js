@@ -17,7 +17,11 @@ export const store = new Vuex.Store({
 	  escuela: '',
 	  id: '',
     codigos: [],
-    codigoEscuela: ''
+    codigoEscuela: '',
+    perfilId: '',
+    perfil: '',
+    perfiles: [],
+    escuelas: []
   },
   mutations,
   actions,
