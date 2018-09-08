@@ -44,6 +44,7 @@ uayaquilIN","cod_escuela":"GyeIn","id":"254"}]},"MensajeRetorno":"OK"}}
             for (let codigo in escuelas) {
               escuelasCodigos.push({ id: codigo['id'], tipo: codigo['cod_escuela'] })
             }
+            console.log(escuelasCodigos)
             resolve(escuelasCodigos)
           } else {
             resolve([{ id: 1, tipo: 'FEDUCATE' },{ id: 2, tipo: 'GyeIn' }])
@@ -76,8 +77,9 @@ eRetorno":"OK"}}
             let anios = resp['AniosLectivos']['AnioLectivo']
             let codigos = [] 
             for (let codigo in anios) {
-              codigos.push({ id: codigo['id'], tipo: codigo['cod_anio'] })
+              codigos.push(codigo['cod_anio'])
             }
+            console.log(codigos)
             resolve(codigos.join(","))
           } else {
             resolve('COS2009,COS2010,COS2011,COS2018')
@@ -97,12 +99,11 @@ function obtenerPerfiles () {
       soap.createClient(URL, function(err, client) {
         client.SelectPerfiles(args, function(err, result) {
           let resp = result['SelectPerfilesResult']
-          console.log('perfiles:'  + JSON.stringify(result))
+          // console.log('perfiles:'  + JSON.stringify(result))
           if (resp && resp['CodigoRetorno'].trim() !== '999') {
             // TODO: logica en result
             /*
-perfiles:{"SelectPerfilesResult":{"CodigoRetorno":"000","MensajeRetorno":"OK","P
-erfiles":{"Perfil":[{"id":"1","nombre":"Superusuario","relacionado_escuela":"fal
+perfiles:{"SelectPerfilesResult":{"CodigoRetorno":"000","MensajeRetorno":"OK","Perfiles":{"Perfil":[{"id":"1","nombre":"Superusuario","relacionado_escuela":"fal
 se","superusuario":"true"},{"id":"3","nombre":"Administrador de escuela","relaci
 onado_escuela":"false","superusuario":"false"},{"id":"4","nombre":"USUARIO ESCUE
 LA","relacionado_escuela":"false","superusuario":"false"},{"id":"5","nombre":"PR
@@ -113,7 +114,13 @@ mbre":"VISTAS","relacionado_escuela":"false","superusuario":"false"}]}}}
 
 }
             */
-            resolve([{ id: 2, tipo: 'Administrador de escuela'},{ id: 3, tipo: 'USUARIO ESCUELA'},{ id: 4, tipo: 'PROFESOR'},{ id: 5, tipo: 'DIRECTOR'},{ id: 6, tipo: 'TUTOR'},{ id: 7, tipo: 'VISTAS'}])
+            let perfiles = resp['Perfiles']['Perfil']
+            let codigos = [] 
+            for (let codigo in perfiles) {
+              codigos.push({ id: codigo['id'], tipo: codigo['nombre'] })
+            }
+            console.log(codigos)
+            resolve(codigos)
           } else {
             resolve([{ id: 2, tipo: 'Administrador de escuela'},{ id: 3, tipo: 'USUARIO ESCUELA'},{ id: 4, tipo: 'PROFESOR'},{ id: 5, tipo: 'DIRECTOR'},{ id: 6, tipo: 'TUTOR'},{ id: 7, tipo: 'VISTAS'}])
           }
