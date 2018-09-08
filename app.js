@@ -41,10 +41,9 @@ uayaquilIN","cod_escuela":"GyeIn","id":"254"}]},"MensajeRetorno":"OK"}}
             */
             let escuelas = resp['Escuelas']['Escuela']
             let escuelasCodigos = [] 
-            for (let codigo in escuelas) {
+            for (let codigo of escuelas) {
               escuelasCodigos.push({ id: codigo['id'], tipo: codigo['cod_escuela'] })
             }
-            console.log(escuelasCodigos)
             resolve(escuelasCodigos)
           } else {
             resolve([{ id: 1, tipo: 'FEDUCATE' },{ id: 2, tipo: 'GyeIn' }])
@@ -76,7 +75,7 @@ eRetorno":"OK"}}
             */
             let anios = resp['AniosLectivos']['AnioLectivo']
             let codigos = [] 
-            for (let codigo in anios) {
+            for (let codigo of anios) {
               codigos.push(codigo['cod_anio'])
             }
             console.log(codigos)
@@ -116,10 +115,9 @@ mbre":"VISTAS","relacionado_escuela":"false","superusuario":"false"}]}}}
             */
             let perfiles = resp['Perfiles']['Perfil']
             let codigos = [] 
-            for (let codigo in perfiles) {
+            for (let codigo of perfiles) {
               codigos.push({ id: codigo['id'], tipo: codigo['nombre'] })
             }
-            console.log(codigos)
             resolve(codigos)
           } else {
             resolve([{ id: 2, tipo: 'Administrador de escuela'},{ id: 3, tipo: 'USUARIO ESCUELA'},{ id: 4, tipo: 'PROFESOR'},{ id: 5, tipo: 'DIRECTOR'},{ id: 6, tipo: 'TUTOR'},{ id: 7, tipo: 'VISTAS'}])

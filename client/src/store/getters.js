@@ -16,6 +16,7 @@ export default {
     return state.perfilId == 1
   },
   ObtenerEscuelas (state) {
+    console.log(state.escuelas)
     return state.escuelas
   },
   ObtenerPerfiles (state) {
