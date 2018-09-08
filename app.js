@@ -140,12 +140,12 @@ app.post('/api/archivo', upload.single('archivo'), (req, res, next) => {
           console.log(err)
           console.log(result)
           let resp = result['ImportarNotasResult']
-          if (resp['CodigoRetorno'] && resp['CodigoRetorno'].trim() !== '999') {
+          if (resp && resp['CodigoRetorno'] && resp['CodigoRetorno'].trim() !== '999') {
             res.send(true)
           } else {
             // resp['MensajeRetorno']
             res.status(400)
-            res.json({ estado: false, mensaje: 'No se puedo enviar el archivo'})
+            res.json({ estado: false, mensaje: 'No se pudo enviar el archivo'})
           }
         })
       })

@@ -129,10 +129,12 @@ export default {
           labelFileLoading: 'Subiendo',
           labelFileProcessing: 'Subiendo',
           labelFileTypeNotAllowed: 'El tipo de archivo no es válido',
+          labelFileProcessingError: 'No se pudo subir el archivo',
           fileValidateTypeLabelExpectedTypes: 'Se espera xml',
           labelFileProcessingComplete: 'Completada',
           labelTapToCancel: 'Toque para cancelar',
           labelTapToUndo: 'Toque para eliminar',
+          labelTapToRetry: 'Toque para reintentar',
           acceptedFileTypes: ['text/xml']
         })
       }
