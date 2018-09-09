@@ -5,6 +5,7 @@ export default {
       Vue.http.post(`/api/login`, { usuario, clave })
         .then((response) => {
           if (response.body.estado) {
+            console.log(response.body.datos)
             commit('setUsuario', response.body.datos)
             commit('setLoggeado')
             resolve(true)

@@ -162,7 +162,7 @@ function loginDev ({ usuario, clave }, req) {
       Codigo: 'cod_escuelaTmp',
       NombreUsuario: nombre,
       Codigos: 'COS2009,COS2010,COS2011',
-      Cod_escuela: '4',
+      Cod_escuela: 'FEDUCATE',
       Escuela: 'ESPOL',
       IdUsuario: '1',
       IdPerfil: perfilId,
@@ -185,8 +185,8 @@ app.post('/api/archivo', upload.single('archivo'), (req, res, next) => {
       console.log("enviar archivo: " + JSON.stringify({ cod_escuela, cod_anio }))
       soap.createClient(URL, function(err, client) {
         client.ImportarNotas(args, function(err, result) {
-          console.log(err)
-          console.log(result)
+          // console.log(err)
+          // console.log(result)
           let resp = result['ImportarNotasResult']
           if (resp && resp['CodigoRetorno'] && resp['CodigoRetorno'].trim() !== '999') {
             res.send(true)
@@ -264,11 +264,9 @@ app.route('/api/usuarios').post((req, res) => {
     try {
       soap.createClient(URL, function(err, client) {
         client.CrearUsuario(args, function(err, result) {
-          let resp = result['CrearUsuarioResult']
           if (resp && resp['Codigo'].trim() !== '999') {
-            res.send(true)
+            res.send({ estado: true, mensaje: resp})
           } else {
-            console.log(result)
             res.status(400)
             res.json({ estado: false, mensaje: resp['MensajeRetorno']})
           }

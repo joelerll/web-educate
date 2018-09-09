@@ -112,12 +112,12 @@ export default {
           this.perfil = ''
         } else {
           this.snackbarError = true
-          this.mensajeError = 'No se puedo crear el usuario'
+          this.mensajeError = 'Persona con ese usuario ya existe'
         }
       })
       .catch((err) => {
         this.snackbarError = true
-        this.mensajeError = 'No se puedo crear el usuario'
+        this.mensajeError = 'Persona con ese usuario ya existe'
       })
     }
   }
