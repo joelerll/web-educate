@@ -253,7 +253,7 @@ app.route('/api/login').post((req, res) => {
     })
   }
 })
-
+//
 app.route('/api/usuarios').post((req, res) => {
   let { codigoEscuela, nombre, usuario, perfil } = req.body
   let args = { cod_escuela: codigoEscuela, Usuario: usuario, Nombres: nombre, IdPerfil: perfil }
