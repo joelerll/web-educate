@@ -145,7 +145,7 @@ function login ({ usuario, clave }, req) {
     })
   })
 }
-
+// joel miclaveprofesor
 function loginDev ({ usuario, clave }, req) {
   return new Promise((resolve, reject) => {
     let perfilId = '1'

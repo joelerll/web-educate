@@ -41,7 +41,7 @@
         v-model="snackbar"
         color="red"
       >
-        El usuario no esta autorizado
+        El usuario no esta autorizado o clave no existe
       <v-btn
         color="white"
         flat
