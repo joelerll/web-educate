@@ -11,16 +11,24 @@
       <!-- codigoEscuela, nombre, usuario, perfil -->
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
-          <form>
+          <form @submit.prevent>
             <v-text-field
-              required
               label="Nombre"
               v-model="nombre"
+              required
+              :rules="nombreRules"
             ></v-text-field>
             <v-text-field
-              required
               label="Usuario"
+              required
               v-model="usuario"
+              :rules="usuarioRules"
+            ></v-text-field>
+            <v-text-field
+              label="Clave"
+              v-model="clave"
+              :rules="claveRules"
+              required
             ></v-text-field>
             <v-select
               :items="escuelas"
@@ -29,6 +37,7 @@
               box
               label="Escoger la escuela"
               v-model="codigoEscuela"
+              required
             ></v-select>
             <v-select
               :items="perfiles"
@@ -37,8 +46,9 @@
               box
               label="Escoger tipo usuario"
               v-model="perfil"
+              required
             ></v-select>
-            <v-btn @click="crear" color="success" :disabled="nombre == '' || usuario == '' || codigoEscuela == '' || perfil == ''">Crear</v-btn>
+            <v-btn @click="crear" color="success" :disabled="nombre == '' || usuario == '' || codigoEscuela == '' || perfil == '' || clave.length < 5">Crear</v-btn>
           </form>
         </v-flex>
       </v-layout>
@@ -74,6 +84,7 @@
 <script>
 export default {
   data: () => ({
+    clave: '',
     codigoEscuela: '',
     usuario: '',
     snackbar: '',
@@ -81,7 +92,14 @@ export default {
     mensajeError: '',
     snackbarError: false,
     timeout: 10000,
-    perfil: ''
+    perfil: '',
+    usuarioRules: [
+      v => !!v || 'Usuario es requerido'
+    ],
+    nombreRules: [
+      v => !!v || 'Nombre es requerido'
+    ],
+    claveRules: [val => (val || '').length > 5 || 'Clave debe ser de tamaño mayor o igual a 5']
   }),
   computed: {
     codigos () {
@@ -102,7 +120,7 @@ export default {
       })
     },
     crear () {
-      let usuario = { codigoEscuela: this.codigoEscuela, nombre: this.nombre, usuario: this.usuario, perfil: this.perfil }
+      let usuario = { codigoEscuela: this.codigoEscuela, nombre: this.nombre, usuario: this.usuario, perfil: this.perfil, clave: this.clave }
       this.$store.dispatch('UsuarioCrear', usuario).then((resp) => {
         if (resp) {
           this.snackbar = true
@@ -110,6 +128,7 @@ export default {
           this.nombre = ''
           this.usuario = ''
           this.perfil = ''
+          this.clave = ''
         } else {
           this.snackbarError = true
           this.mensajeError = 'Persona con ese usuario ya existe'

@@ -236,7 +236,7 @@ app.route('/api/login').post((req, res) => {
       }
     })
   } else {
-    Promise.all([login({ usuario, clave }, req), obtenerAnios(), obtenerPerfiles(), obtenerEscuelas()])
+    Promise.all([loginDev({ usuario, clave }, req), obtenerAnios(), obtenerPerfiles(), obtenerEscuelas()])
     .then(values => {
       let [loginResp, anios, perfiles, escuelas ] = values
       req.session.perfiles = perfiles
@@ -255,7 +255,8 @@ app.route('/api/login').post((req, res) => {
 })
 //
 app.route('/api/usuarios').post((req, res) => {
-  let { codigoEscuela, nombre, usuario, perfil } = req.body
+  let { codigoEscuela, nombre, usuario, perfil, clave } = req.body
+  let argsClave = { Usuario: usuario, Password: clave }
   let args = { cod_escuela: codigoEscuela, Usuario: usuario, Nombres: nombre, IdPerfil: perfil }
   console.log("Args usuario" + JSON.stringify(args))
   if (process.env.NODE_ENV === 'development') {
@@ -265,7 +266,9 @@ app.route('/api/usuarios').post((req, res) => {
       soap.createClient(URL, function(err, client) {
         client.CrearUsuario(args, function(err, result) {
           if (resp && resp['Codigo'].trim() !== '999') {
-            res.send({ estado: true, mensaje: resp})
+            client.ResetPassword(argClave, function(err, result) {
+              res.send({ estado: true, mensaje: resp})
+            })
           } else {
             res.status(400)
             res.json({ estado: false, mensaje: resp['MensajeRetorno']})
