@@ -236,7 +236,7 @@ app.route('/api/login').post((req, res) => {
       }
     })
   } else {
-    Promise.all([loginDev({ usuario, clave }, req), obtenerAnios(), obtenerPerfiles(), obtenerEscuelas()])
+    Promise.all([login({ usuario, clave }, req), obtenerAnios(), obtenerPerfiles(), obtenerEscuelas()])
     .then(values => {
       let [loginResp, anios, perfiles, escuelas ] = values
       req.session.perfiles = perfiles
@@ -265,9 +265,11 @@ app.route('/api/usuarios').post((req, res) => {
     try {
       soap.createClient(URL, function(err, client) {
         client.CrearUsuario(args, function(err, result) {
+          let resp = result['CrearUsuarioResult']
           if (resp && resp['Codigo'].trim() !== '999') {
-            client.ResetPassword(argClave, function(err, result) {
-              res.send({ estado: true, mensaje: resp})
+            client.ResetPassword(argsClave, function(err, result) {
+              console.log(result)
+              res.send({ estado: true, mensaje: 'Creado correctament'})
             })
           } else {
             res.status(400)
