@@ -181,17 +181,16 @@ app.post('/api/archivo', upload.single('archivo'), (req, res, next) => {
     try {
       // codigo del webService
       let { cod_escuela, cod_anio } = req.headers
-      let args = { cod_escuela, cod_anio, Documentos: req.file.buffer.toString() }
+      let pNombre = `${req.file.originalname}_${cod_escuela}_${cod_anio}`
+      let args = { cod_escuela, cod_anio, Documentos: { pNombre, pcontenido: req.file.buffer.toString() } }
       console.log("enviar archivo: " + JSON.stringify({ cod_escuela, cod_anio }))
       soap.createClient(URL, function(err, client) {
         client.ImportarNotas(args, function(err, result) {
-          // console.log(err)
-          // console.log(result)
+          console.log(result)
           let resp = result['ImportarNotasResult']
           if (resp && resp['CodigoRetorno'] && resp['CodigoRetorno'].trim() !== '999') {
             res.send(true)
           } else {
-            // resp['MensajeRetorno']
             res.status(400)
             res.json({ estado: false, mensaje: 'No se pudo enviar el archivo'})
           }
@@ -269,7 +268,7 @@ app.route('/api/usuarios').post((req, res) => {
           if (resp && resp['Codigo'].trim() !== '999') {
             client.ResetPassword(argsClave, function(err, result) {
               console.log(result)
-              res.send({ estado: true, mensaje: 'Creado correctament'})
+              res.send({ estado: true, mensaje: 'Creado correctamente'})
             })
           } else {
             res.status(400)
