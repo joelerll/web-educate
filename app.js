@@ -1,10 +1,11 @@
 process.on('uncaughtException', function(err) {
-  console.error('Caught exception: ' + err)
-  console.error(err.stack)
+  console.log('Caught exception: ' + err)
+  console.log(err.stack)
 })
 
-// 
 const URL = 'http://localhost:14122/ServicioAPCI.svc?wsdl'
+let winston = require('winston')
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
@@ -19,9 +20,32 @@ const storage = multer.memoryStorage()
 const upload = multer({ storage })
 const soap = require('soap')
 
-// SelectEscuelas ()
-// SelectAniosLectivos()
-// SelectPerfiles ()
+// const logger = winston.createLogger({
+//   level: 'info',
+//   transports: [
+//     new winston.transports.File({ filename: 'error.log', level: 'error' }),
+//     new winston.transports.File({ filename: 'log.log' })
+//   ]
+// })
+
+const { createLogger, format, transports } = require('winston');
+const { combine, timestamp, label, printf } = format;
+
+const myFormat = printf(info => {
+  return `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`;
+});
+
+const logger = createLogger({
+  format: combine(
+    label({ label: 'Educate' }),
+    timestamp(),
+    myFormat
+  ),
+  transports: [new transports.File({ filename: 'log.log' })]
+});
+
+
+
 
 function obtenerEscuelas () {
   return new Promise((resolve, reject) => {
@@ -137,6 +161,10 @@ function login ({ usuario, clave }, req) {
           req.session.loggeado = true
           req.session.usuario = result['LoginResult']
           let { Codigo, Escuela, IdUsuario, NombreUsuario, Cod_escuela, IdPerfil, Perfil } = result['LoginResult']
+          // loggger
+          let mensaje = `${new Date().toISOString()} Loggeado el usuario: ${NombreUsuario}, IdUsuario: ${IdUsuario}, NombreUsuario: ${NombreUsuario}, Cod_escuela: ${Cod_escuela}, IdPerfil: ${IdPerfil}, Perfil: ${Perfil}`
+          console.log(mensaje)
+
           resolve({ estado: true, datos: { codigo: Codigo, escuela: Escuela, id: IdUsuario, nombre: NombreUsuario, codigoEscuela: Cod_escuela, perfilId: IdPerfil, perfil: Perfil }})
         } else {
           resolve({ estado: false, datos: 'El usuario no existe'})
@@ -170,6 +198,12 @@ function loginDev ({ usuario, clave }, req) {
     }
     req.session.usuario = result['LoginResult']
     let { Codigo, Escuela, IdUsuario, NombreUsuario, Codigos, Cod_escuela, IdPerfil, Perfil } = result['LoginResult']
+
+    // loggger
+    let mensaje = `${new Date().toISOString()} Loggeado el usuario: ${NombreUsuario}, IdUsuario: ${IdUsuario}, NombreUsuario: ${NombreUsuario}, Cod_escuela: ${Cod_escuela}, IdPerfil: ${IdPerfil}, Perfil: ${Perfil}`
+    console.log(mensaje)
+
+
     resolve({ estado: true, datos: { codigo: Codigo, escuela: Escuela, id: IdUsuario, nombre: NombreUsuario, codigos: Codigos, codigoEscuela: Cod_escuela, perfilId: IdPerfil, perfil: Perfil }})
   })
 }
@@ -183,7 +217,7 @@ app.post('/api/archivo', upload.single('archivo'), (req, res, next) => {
       let { cod_escuela, cod_anio } = req.headers
       let pNombre = `${req.file.originalname}_${cod_escuela}_${cod_anio}`
       let args = { cod_escuela, cod_anio, Documentos: { pNombre, pcontenido: req.file.buffer.toString() } }
-      console.log("enviar archivo: " + JSON.stringify({ cod_escuela, cod_anio }))
+      console.log(`${new Date().toISOString()} archivo enviado: ${cod_escuela}, ${cod_anio}, ${req.file.originalname}`)
       soap.createClient(URL, function(err, client) {
         client.ImportarNotas(args, function(err, result) {
           console.log(result)
@@ -257,7 +291,14 @@ app.route('/api/usuarios').post((req, res) => {
   let { codigoEscuela, nombre, usuario, perfil, clave } = req.body
   let argsClave = { Usuario: usuario, Password: clave }
   let args = { cod_escuela: codigoEscuela, Usuario: usuario, Nombres: nombre, IdPerfil: perfil }
-  console.log("Args usuario" + JSON.stringify(args))
+  // loggger
+  let mensaje = `${new Date().toISOString()} Usuario Creado: ${JSON.stringify(args)}`
+  console.log(mensaje)
+  let creadoPor = req.session['usuario']
+  if (creadoPor) {
+    console.log(`${new Date().toISOString()} Creado por: ${JSON.stringify(creadoPor)}`)
+  }
+  // console.log("Args usuario" + JSON.stringify(args))
   if (process.env.NODE_ENV === 'development') {
     res.json({ estado: true, datos: 'Creado Correctamente'})
   } else {

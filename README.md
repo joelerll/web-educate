@@ -1,7 +1,9 @@
 ## Proyecto Comunitarias Educate
 
 [x] Poder loggearse como profesor o admin
+
 [x] Subir un archivo xml de notas
+
 [x] Poder crear un usuario
 
 ## Instalación
@@ -78,6 +80,7 @@ npm run install
 npm run dev # escuchará el puerto 8080
 ```
 
+ yarn cross-env NODE_ENV=development forever -o out.log -e err.log app.js
 
 ## Desarrollador
 

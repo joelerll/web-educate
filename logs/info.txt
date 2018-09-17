@@ -1,0 +1,4 @@
+2018-09-17T01:34:40.489Z : Loggeado el usuario_Profesor Usuario IdUsuario_1 NombreUsuario_Profesor Usuario
+2018-09-17T01:35:39.102Z : Loggeado el usuario_Profesor Usuario IdUsuario_1 NombreUsuario_Profesor Usuario Cod_escuela_FEDUCATE IdPerfil_4Perfil_PROFESOR
+2018-09-17T01:37:58.800Z : Hello
+2018-09-17T01:39:58.796Z : Hello
