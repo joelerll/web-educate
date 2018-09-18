@@ -7,7 +7,7 @@
   "scripts": {
     "prod": "cross-env NODE_ENV=production nodemon app.js ",
     "dev": "cross-env NODE_ENV=development nodemon app.js ",
-    "cross-env": "cross-env"
+    "server": "cross-env NODE_ENV=production forever -o out.log -e err.log app.js"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
