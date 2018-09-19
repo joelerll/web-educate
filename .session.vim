@@ -7,7 +7,9 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +0 ~/comunitarias/web/install.cmd
+badd +1 ~/comunitarias/web/package.json
+badd +77 ~/comunitarias/web/app.js
+badd +1 ~/comunitarias/web/install.cmd
 argglobal
 silent! argdel *
 $argadd install.cmd
@@ -32,7 +34,7 @@ if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1
-normal! 029|
+normal! 045|
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

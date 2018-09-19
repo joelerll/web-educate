@@ -1,1 +1,1 @@
-start cmd.exe /k "npm install"
+start cmd.exe /k "npm cache clean --force && npm install"
