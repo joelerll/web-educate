@@ -8,7 +8,7 @@
             <v-spacer></v-spacer>
           </v-toolbar>
           <v-card-media height="100px">
-            <img src="@/assets/logoe.png">
+            <img src="@/assets/logoe.jpg">
           </v-card-media>
           <v-card-text>
             <v-form v-model="valid">
